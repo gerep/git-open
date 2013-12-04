@@ -11,8 +11,9 @@ function _opengit_open()
 
 current_branch()
 {
+  local branch=''
   branch=`git branch | awk -F'*' '{print $2}'`
-  echo $current_branch
+  echo $branch
 }
 
 if [ -d .git ]; then
