@@ -32,7 +32,7 @@ if [ -d .git ]; then
     fi
 
     if [ -z "$1" ];then
-      url="$where$(echo $remotes | cut -d" " -f1 | cut -d"." -f1)"
+      url="$where$(echo $remotes | cut -d" " -f1 | cut -d"." -f1)/tree/$(current_branch)"
     else
       url="$where$(echo $remotes | cut -d" " -f1 | cut -d"." -f1)/tree/${1}"
     fi
