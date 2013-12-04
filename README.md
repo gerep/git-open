@@ -9,7 +9,7 @@ You have that `.sh` file but you can use it as a function on your, let's say, `.
 function _opengit_open()
 {
   local open_cmd='huh?'
-  if [ -n `echo $MACHTYPE | grep darwin` ]; then
+  if [ -z `echo $MACHTYPE | grep linux` ]; then
     open_cmd='open'
   else
     open_cmd='xdg-open'
