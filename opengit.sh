@@ -9,6 +9,12 @@ function _opengit_open()
   $open_cmd $1
 }
 
+current_branch()
+{
+  branch=`git branch | awk -F'*' '{print $2}'`
+  echo $current_branch
+}
+
 if [ -d .git ]; then
   if [ -z "$(git remote -v)" ]; then
     echo "Hum....there are no remotes here"
