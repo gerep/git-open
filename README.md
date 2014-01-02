@@ -1,60 +1,45 @@
 # opengit, saving you a few seconds
 
 
-Open your github or bitbucket project page from your terminal
+It will open your github project page from your terminal
 
-You have that `.sh` file but you can use it as a function on your, let's say, `.bash_profile`.
+## Install
 
-```bash
-function _opengit_open()
-{
-  local open_cmd='huh?'
-  if [ -z `echo $MACHTYPE | grep linux` ]; then
-    open_cmd='open'
-  else
-    open_cmd='xdg-open'
-  fi
-  $open_cmd $1
-}
+Instructions for Linux, OS X users should make the necessary substitutions, if any, I know nothing about OS X.
 
-function opengit() {
-  if [ -d .git ]; then
-    if [ -z "$(git remote -v)" ]; then
-      echo "Hum....there are no remotes here"
-    else
-      where="https://github.com/" # default location to github
-      remotes=$(git remote -v | awk -F'git@github.com:' '{print $2}' | cut -d" " -f1)
-      if [ -z "$remotes" ]; then
-        remotes=$(git remote -v | awk -F'https://github.com/' '{print $2}' | cut -d" " -f1)
-      fi
+Create `~/bin`
 
-      if [ -z "$remotes" ]; then
-        remotes=$(git remote -v | awk -F'git@bitbucket.org/' '{print $2}' | cut -d" " -f1)
-        where="https://bitbucket.org/"
-      fi
-
-      if [ -z "$1" ];then
-        url="$where$(echo $remotes | cut -d" " -f1 | cut -d"." -f1)"
-      else
-        url="$where$(echo $remotes | cut -d" " -f1 | cut -d"." -f1)/tree/${1}"
-      fi
-      _opengit_open $url
-    fi
-  else
-    echo "Crap, ain't no git repo"
-  fi;
-}
+```shell
+mkdir -p "$HOME/bin"
 ```
 
-and `. ~/.bash_profile` to load the change. Now you can `opengit` on your terminal and your favorite browser will open your project page.
+Add the directory to the beginnig of the `PATH` variable inside `.bashrc`
+
+```shell
+echo 'PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
+```
+
+This way, every new instance of Bash will now check for executable scripts in your bin directory.
+
+Now you save the file `opengit` inside the `~/bin` directory and make the file executable with:
+
+```shell
+chmod +x opengit
+```
+
+If for some reason you don't want/can't grant the permissions, you can run it like this:
+
+```shell
+bash opengit
+```
 
 ## Usage
 
-You can
+You can do this to open Github on the current branch
 
     $ opengit
 
-or
+or specify the branch
 
     $ opengit remote_branch
 
@@ -67,9 +52,4 @@ or
 5. Create new Pull Request
 6. Wait for me :smile:
 
-## I love you
-
-[I](http://gerep.blogspot.com.br/) made this. Ping me on Twitter —
-[@danielgerep](http://twitter.com/danielgerep) — so we can be friends.
-
-Power to you!
+## Power to you my friend!

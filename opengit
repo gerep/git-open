@@ -1,0 +1,42 @@
+#! /usr/bin/env bash
+
+function _opengit_open()
+{
+  local open_cmd='huh?'
+  if [ -z `echo $MACHTYPE | grep linux` ]; then
+    open_cmd='open'
+  else
+    open_cmd='xdg-open'
+  fi
+  $open_cmd $1
+}
+
+function get_remote()
+{
+  remote=$(git config remote.origin.url)
+  if [[ $remote = https* ]]; then
+    repo=${remote##*.com/}
+  else
+    repo=${remote##*:}
+  fi
+  echo $repo
+}
+
+if [ -d .git ]; then
+  if [ -z "$(git remote -v)" ]; then
+    echo "Hum....there are no remotes here"
+  else
+    repo=$(get_remote)
+
+    url="https://github.com/${repo%%.*}/tree/"
+
+    if [ -z "$1" ];then
+      url+=$(git symbolic-ref --short HEAD)
+    else
+      url+=${1}
+    fi
+    _opengit_open $url
+  fi
+else
+  echo "Crap, ain't no git repo"
+fi;
