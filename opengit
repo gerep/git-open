@@ -1,6 +1,12 @@
 #! /usr/bin/env bash
+#
+#   opengit [branch]
+#
+# This script will open your project's page on github.com.
+#
+# When no argument is passed, it will open the page on the current branch
 
-function _opengit_open()
+function open()
 {
   local open_cmd='huh?'
   if [ -z `echo $MACHTYPE | grep linux` ]; then
@@ -10,6 +16,10 @@ function _opengit_open()
   fi
   $open_cmd $1
 }
+
+# Check if remote is HTTPS or SSH
+# If HTTPS, return everything after '.com/'
+# If SSH, return everything after ':'
 
 function get_remote()
 {
@@ -22,6 +32,18 @@ function get_remote()
   echo $repo
 }
 
+# Check if the branch exists remotely
+
+function check_branch_existence()
+{
+  remote_branches=$(git branch -r)
+  if [[ $remote_branches = *$1* ]]; then
+    open $2$1
+  else
+    echo "The branch '$1' is only local"
+  fi
+}
+
 if [ -d .git ]; then
   if [ -z "$(git remote -v)" ]; then
     echo "Hum....there are no remotes here"
@@ -31,11 +53,10 @@ if [ -d .git ]; then
     url="https://github.com/${repo%%.*}/tree/"
 
     if [ -z "$1" ];then
-      url+=$(git symbolic-ref --short HEAD)
+      check_branch_existence $(git symbolic-ref --short HEAD) $url
     else
-      url+=${1}
+      check_branch_existence ${1} $url
     fi
-    _opengit_open $url
   fi
 else
   echo "Crap, ain't no git repo"
