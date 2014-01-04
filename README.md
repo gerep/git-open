@@ -13,7 +13,7 @@ Create `~/bin`
 mkdir -p "$HOME/bin"
 ```
 
-Add the directory to the beginnig of the `PATH` variable inside `.bashrc`
+Add the directory to the beginning of the `PATH` variable inside `.bashrc`
 
 ```shell
 echo 'PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
