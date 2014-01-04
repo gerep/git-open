@@ -7,6 +7,9 @@
 # When no argument is passed, it will open the page on the current branch
 
 function open()
+# Fail on any error
+set -eu
+
 {
   local open_cmd='huh?'
   if [ -z `echo $MACHTYPE | grep linux` ]; then
