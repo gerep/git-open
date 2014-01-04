@@ -19,7 +19,7 @@ function open_url()
     *linux*) local _open='xdg-open'
   esac
   echo "Running: $_open $1"
-  $_open $1
+  $_open $1 &> /dev/null
 }
 
 # Check if remote is HTTPS or SSH
