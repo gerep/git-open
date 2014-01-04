@@ -6,15 +6,20 @@
 #
 # When no argument is passed, it will open the page on the current branch
 
-function open()
+# Fail on any error
+set -eu
+
+# Open git URL using default 'open' ocommand
+# $1: URL to open
+
+function open_url()
 {
-  local open_cmd='huh?'
-  if [ -z `echo $MACHTYPE | grep linux` ]; then
-    open_cmd='open'
-  else
-    open_cmd='xdg-open'
-  fi
-  $open_cmd $1 &> /dev/null
+  case $MACHTYPE in
+    *linux*|*apple*) local _open='open';;
+                  *) local _open='xdg-open'
+  esac
+  echo "Running: $_open $1"
+  $_open $1
 }
 
 # Check if remote is HTTPS or SSH
@@ -23,41 +28,47 @@ function open()
 
 function get_remote()
 {
-  remote=$(git config remote.origin.url)
-  if [[ $remote = https* ]]; then
-    repo=${remote##*.com/}
-  else
-    repo=${remote##*:}
+  if ! remote=$(git config remote.origin.url); then
+    echo "This is not a git repository" >&2
+    return 1
   fi
-  echo $repo
+  if [ -z "$remote" ]; then
+    echo "There are no origin remote" >&2
+    return 1
+  fi
+  if [ ${remote:0:4} = 'http' ]; then
+    echo ${remote##*.com/}
+  else
+    echo ${remote##*:}
+  fi
 }
 
 # Check if the branch exists remotely
+# $1: branch name (w/o remote)
 
-function check_branch_existence()
+function branch_exists()
 {
-  remote_branches=$(git branch -r)
-  if [[ $remote_branches = *$1* ]]; then
-    open $2$1
-  else
-    echo "The branch '$1' is only local"
-  fi
+  git branch -r|grep -q "origin/$1\$"
 }
 
-if [ -d .git ]; then
-  if [ -z "$(git remote -v)" ]; then
-    echo "Hum....there are no remotes here"
-  else
-    repo=$(get_remote)
+#
+# Main
+#
+if ! repo=$(get_remote); then
+  exit 1
+fi
 
-    url="https://github.com/${repo%%.*}/tree/"
+url="https://github.com/${repo%%.*}/tree/"
 
-    if [ -z "$1" ];then
-      check_branch_existence $(git symbolic-ref --short HEAD) $url
-    else
-      check_branch_existence ${1} $url
-    fi
-  fi
+if [ $# -gt 0 ]; then
+  branch=$1
 else
-  echo "Crap, ain't no git repo"
-fi;
+  branch=$(git symbolic-ref --short HEAD)
+fi
+
+if ! branch_exists $branch; then
+  echo "Branch $branch does not exists on remote"
+  exit 1
+fi
+
+open_url $url$branch
