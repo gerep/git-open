@@ -14,7 +14,7 @@ function open()
   else
     open_cmd='xdg-open'
   fi
-  $open_cmd $1
+  $open_cmd $1 &> /dev/null
 }
 
 # Check if remote is HTTPS or SSH
