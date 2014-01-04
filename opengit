@@ -15,8 +15,8 @@ set -eu
 function open_url()
 {
   case $MACHTYPE in
-    *linux*|*apple*) local _open='open';;
-                  *) local _open='xdg-open'
+    *apple*) local _open='open';;
+    *linux*) local _open='xdg-open'
   esac
   echo "Running: $_open $1"
   $_open $1
