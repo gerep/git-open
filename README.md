@@ -1,7 +1,7 @@
 # opengit, saving you a few seconds
 
 
-It will open your github project page from your terminal
+It will open your github/bitbucket project page from your terminal
 
 ## Install
 
@@ -35,7 +35,7 @@ bash opengit
 
 ## Usage
 
-You can do this to open Github on the current branch
+You can do this to open Github/Bitbucket on the current branch
 
     $ opengit
 
