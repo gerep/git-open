@@ -1,4 +1,4 @@
-# opengit, saving you a few seconds
+# git-open, saving you a few seconds
 
 
 It will open your github/bitbucket project page from your terminal
@@ -21,27 +21,27 @@ echo 'PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
 
 This way, every new instance of Bash will now check for executable scripts in your bin directory.
 
-Now you save the file `opengit` inside the `~/bin` directory and make the file executable with:
+Now you save the file `git-open` inside the `~/bin` directory and make the file executable with:
 
 ```shell
-chmod +x opengit
+chmod +x git-open
 ```
 
 If for some reason you don't want/can't grant the permissions, you can run it like this:
 
 ```shell
-bash opengit
+bash git-open
 ```
 
 ## Usage
 
 You can do this to open Github/Bitbucket on the current branch
 
-    $ opengit
+    $ git-open
 
 or specify the branch
 
-    $ opengit remote_branch
+    $ git-open remote_branch
 
 ## Contributing
 
