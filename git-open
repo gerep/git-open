@@ -61,7 +61,7 @@ fi
 function url()
 {
   if [[ $(git config remote.origin.url) =~ "github" ]]; then
-    echo "https://github.com/${repo%%.*}/tree/"
+    echo "https://github.com/${repo%.*}/tree/"
   else
     echo "https://bitbucket.com/${repo%%.*}/branch/"
   fi
