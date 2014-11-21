@@ -27,21 +27,15 @@ Now you save the file `git-open` inside the `~/bin` directory and make the file 
 chmod +x git-open
 ```
 
-If for some reason you don't want/can't grant the permissions, you can run it like this:
-
-```shell
-bash git-open
-```
-
 ## Usage
 
 You can do this to open Github/Bitbucket on the current branch
 
-    $ git-open
+    $ git open
 
 or specify the branch
 
-    $ git-open remote_branch
+    $ git open remote_branch
 
 ## Contributing
 
