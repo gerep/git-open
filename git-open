@@ -76,4 +76,4 @@ main() {
   open_url $(url)$branch
 }
 
-main
+main "$@"
