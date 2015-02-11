@@ -37,6 +37,10 @@ or specify the branch
 
     $ git open remote_branch
 
+## Dependency
+
+[Linux] You have to install xdg-utils
+
 ## Contributing
 
 1. Fork it
