@@ -16,7 +16,7 @@ mkdir -p "$HOME/bin"
 Add the directory to the beginning of the `PATH` variable inside `.bashrc`
 
 ```shell
-echo 'PATH="$HOME/bin:$PATH"' >> "$HOME/.bashrc"
+PATH="$HOME/bin:$PATH"
 ```
 
 This way, every new instance of Bash will now check for executable scripts in your bin directory.
