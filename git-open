@@ -70,7 +70,7 @@ function url()
 if [ $# -gt 0 ]; then
   branch=$1
 else
-  branch=$(git symbolic-ref --short HEAD)
+  branch=$(git rev-parse --abbrev-ref HEAD)
 fi
 
 if ! branch_exists $branch; then
