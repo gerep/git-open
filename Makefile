@@ -3,8 +3,8 @@ DESTDIR  = /usr/local/bin
 PROGRAM  = git-open
 
 install: $(PROGRAM)
-	cp git-open $(DESTDIR)
-	chmod +x $(DESTDIR)/git-open
+	cp $(PROGRAM) $(DESTDIR)
+	chmod +x $(DESTDIR)/$(PROGRAM)
 
 uninstall | clean:
-	rm -f $(DESTDIR)/git-open
+	rm -f $(DESTDIR)/$(PROGRAM)
