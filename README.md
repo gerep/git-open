@@ -6,7 +6,7 @@ It will open your github/bitbucket project page from your terminal
 ## Install/Uninstall
 
 ```shell
-sudo make [install, clear]
+sudo make [install|uninstall/clear]
 ```
 
 ## Usage

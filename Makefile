@@ -6,5 +6,5 @@ install: $(PROGRAM)
 	cp git-open $(DESTDIR)
 	chmod +x $(DESTDIR)/git-open
 
-clean:
+uninstall | clean:
 	rm -f $(DESTDIR)/git-open
