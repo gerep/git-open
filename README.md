@@ -3,28 +3,10 @@
 
 It will open your github/bitbucket project page from your terminal
 
-## Install
-
-Instructions for Linux, OS X users should make the necessary substitutions, if any, I know nothing about OS X.
-
-Create `~/bin`
+## Install/Uninstall
 
 ```shell
-mkdir -p "$HOME/bin"
-```
-
-Add the directory to the beginning of the `PATH` variable inside `.bashrc`
-
-```shell
-PATH="$HOME/bin:$PATH"
-```
-
-This way, every new instance of Bash will now check for executable scripts in your bin directory.
-
-Now you save the file `git-open` inside the `~/bin` directory and make the file executable with:
-
-```shell
-chmod +x git-open
+sudo make [install, clear]
 ```
 
 ## Usage
