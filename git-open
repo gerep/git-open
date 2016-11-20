@@ -9,6 +9,7 @@
 # Fail on any error
 set -eu
 
+shopt -s extglob
 # Open git URL using default 'open' ocommand
 # $1: URL to open
 
@@ -37,7 +38,7 @@ function get_remote()
     return 1
   fi
   if [ ${remote:0:4} = 'http' ]; then
-    echo ${remote##*.com/}
+    echo ${remote##*@(.org/|.com/)}
   else
     echo ${remote##*:}
   fi
