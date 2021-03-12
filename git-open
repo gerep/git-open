@@ -77,6 +77,10 @@ function url()
 
 if [ $# -gt 0 ]; then
   branch=$1
+  if [ $# -gt 1 ]; then
+    file="/$2"
+    echo $file
+  fi
 else
   branch=$(git rev-parse --abbrev-ref HEAD)
 fi
@@ -86,4 +90,4 @@ if ! branch_exists $branch; then
   exit 1
 fi
 
-open_url $(url)$branch
+open_url $(url)$branch${file-}

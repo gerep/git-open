@@ -1,6 +1,5 @@
 # git-open, saving you a few seconds
 
-
 It will open your github/bitbucket project page from your terminal
 
 ## Install/Uninstall
@@ -18,6 +17,10 @@ You can do this to open Github/Bitbucket on the current branch
 or specify the branch
 
     $ git open remote_branch
+
+and also the file
+
+    $ git open remote_branch file_path
 
 ## Dependency
 
