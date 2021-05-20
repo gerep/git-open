@@ -20,7 +20,7 @@ function open_url()
     *linux*) local _open='xdg-open'
   esac
   echo "Running: $_open $1"
-  $_open $1 &> /dev/null
+  $_open "$1" &> /dev/null
 }
 
 # Check if remote is HTTPS or SSH
@@ -37,10 +37,10 @@ function get_remote()
     echo "There are no origin remote" >&2
     return 1
   fi
-  if [ ${remote:0:4} = 'http' ]; then
-    echo ${remote##*@(.org/|.com/)}
+  if [ "${remote:0:4}" = 'http' ]; then
+    echo "${remote##*@(.org/|.com/)}"
   else
-    echo ${remote##*:}
+    echo "${remote##*:}"
   fi
 }
 
@@ -79,15 +79,15 @@ if [ $# -gt 0 ]; then
   branch=$1
   if [ $# -gt 1 ]; then
     file="/$2"
-    echo $file
+    echo "$file"
   fi
 else
   branch=$(git rev-parse --abbrev-ref HEAD)
 fi
 
-if ! branch_exists $branch; then
+if ! branch_exists "$branch"; then
   echo "Branch $branch does not exists on remote"
   exit 1
 fi
 
-open_url $(url)$branch${file-}
+open_url "$(url)$branch${file-}"
