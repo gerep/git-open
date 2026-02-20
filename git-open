@@ -73,6 +73,10 @@ function url()
   if [[ $(git config remote.origin.url) =~ "gitlab" ]]; then
     echo "https://gitlab.com/${repo%.*}/tree/"
   fi
+
+  if [[ $(git config remote.origin.url) =~ "codeberg" ]]; then
+    echo "https://codeberg.org/${repo%.*}/src/branch/"
+  fi
 }
 
 if [ $# -gt 0 ]; then
