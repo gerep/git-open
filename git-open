@@ -1,97 +1,101 @@
-#! /usr/bin/env bash
-#
-#   opengit [branch]
-#
-# This script will open your project's page on github.com.
-#
-# When no argument is passed, it will open the page on the current branch
-
-# Fail on any error
+#!/usr/bin/env bash
+# Open a remote branch or file in the default browser.
 set -eu
 
-shopt -s extglob
-# Open git URL using default 'open' ocommand
-# $1: URL to open
-
-function open_url()
-{
-  case $MACHTYPE in
-    *apple*) local _open='open';;
-    *linux*) local _open='xdg-open'
-  esac
-  echo "Running: $_open $1"
-  $_open "$1" &> /dev/null
-}
-
-# Check if remote is HTTPS or SSH
-# If HTTPS, return everything after '.com/'
-# If SSH, return everything after ':'
-
-function get_remote()
-{
-  if ! remote=$(git config remote.origin.url); then
-    echo "This is not a git repository" >&2
-    return 1
-  fi
-  if [ -z "$remote" ]; then
-    echo "There are no origin remote" >&2
-    return 1
-  fi
-  if [ "${remote:0:4}" = 'http' ]; then
-    echo "${remote##*@(.org/|.com/)}"
-  else
-    echo "${remote##*:}"
-  fi
-}
-
-# Check if the branch exists remotely
-# $1: branch name (w/o remote)
-
-function branch_exists()
-{
-  git branch -r|grep -q "origin/$1\$"
-}
-
-#
-# Main
-#
-if ! repo=$(get_remote); then
+fail() {
+  echo "git-open: $*" >&2
   exit 1
-fi
-
-# Specify the service to be used
-function url()
-{
-  if [[ $(git config remote.origin.url) =~ "github" ]]; then
-    echo "https://github.com/${repo%.*}/tree/"
-  fi
-
-  if [[ $(git config remote.origin.url) =~ "bitbucket" ]]; then
-    echo "https://bitbucket.org/${repo%%.*}/branch/"
-  fi
-
-  if [[ $(git config remote.origin.url) =~ "gitlab" ]]; then
-    echo "https://gitlab.com/${repo%.*}/tree/"
-  fi
-
-  if [[ $(git config remote.origin.url) =~ "codeberg" ]]; then
-    echo "https://codeberg.org/${repo%.*}/src/branch/"
-  fi
 }
 
-if [ $# -gt 0 ]; then
+encode_path() {
+  local LC_ALL=C value=$1 char i
+  for ((i = 0; i < ${#value}; i++)); do
+    char=${value:i:1}
+    case $char in
+      [a-zA-Z0-9.~_/-]) printf '%s' "$char" ;;
+      *) printf '%%%02X' "'$char" ;;
+    esac
+  done
+}
+
+if [[ ${1-} == --help || ${1-} == -h ]]; then
+  echo 'Usage: git open [branch [file_path]]'
+  exit 0
+fi
+[[ $# -le 2 ]] || fail 'Usage: git open [branch [file_path]]'
+
+git rev-parse --git-dir >/dev/null 2>&1 || fail 'This is not a git repository'
+remote=$(git config --get remote.origin.url) || fail 'There is no origin remote'
+[[ -n $remote ]] || fail 'The origin remote URL is empty'
+
+# Accept HTTP(S), SSH URLs, and Git’s scp-style SSH syntax.
+scheme=https
+case $remote in
+  http://*|https://*|ssh://*)
+    transport=${remote%%://*}
+    address=${remote#*://}
+    [[ $address == */* ]] || fail "Invalid remote URL: $remote"
+    authority=${address%%/*}
+    host=${authority##*@}
+    repo=${address#*/}
+    if [[ $transport == ssh ]]; then
+      host=${host%%:*}
+    else
+      scheme=$transport
+    fi
+    ;;
+  *:*)
+    host=${remote%%:*}
+    host=${host##*@}
+    repo=${remote#*:}
+    ;;
+  *) fail "Unsupported remote URL: $remote" ;;
+esac
+repo=${repo%/}
+repo=${repo%.git}
+[[ -n $host && $repo == */* ]] || fail "Invalid remote URL: $remote"
+
+case ${host%%:*} in
+  github.com|github.*) provider=github ;;
+  bitbucket.org) provider=bitbucket ;;
+  gitlab.com|gitlab.*) provider=gitlab ;;
+  codeberg.org) provider=codeberg ;;
+  *) fail "Unsupported Git host: $host" ;;
+esac
+
+if [[ $# -gt 0 ]]; then
   branch=$1
-  if [ $# -gt 1 ]; then
-    file="/$2"
-    echo "$file"
-  fi
 else
-  branch=$(git rev-parse --abbrev-ref HEAD)
+  branch=$(git symbolic-ref --quiet --short HEAD) || fail 'Detached HEAD; specify a branch explicitly'
+fi
+git check-ref-format "refs/heads/$branch" >/dev/null 2>&1 || fail "Invalid branch name: $branch"
+git show-ref --verify --quiet "refs/remotes/origin/$branch" ||
+  fail "Branch '$branch' is not in the local origin refs; try git fetch origin"
+
+kind=tree
+[[ $# -lt 2 ]] || kind=blob
+case $provider in
+  github) route=$kind ;;
+  gitlab) route=-/$kind ;;
+  bitbucket)
+    route=branch
+    [[ $kind == tree ]] || route=src
+    ;;
+  codeberg) route=src/branch ;;
+esac
+
+url="$scheme://$host/$repo/$route/$(encode_path "$branch")"
+if [[ $# -eq 2 ]]; then
+  file=${2#./}
+  [[ -n $file && $file != /* ]] || fail 'File path must be nonempty and repository-relative'
+  url="$url/$(encode_path "$file")"
 fi
 
-if ! branch_exists "$branch"; then
-  echo "Branch $branch does not exists on remote"
-  exit 1
-fi
-
-open_url "$(url)$branch${file-}"
+case $OSTYPE in
+  darwin*) opener=open ;;
+  linux*) opener=xdg-open ;;
+  *) fail "Unsupported operating system: $OSTYPE" ;;
+esac
+command -v "$opener" >/dev/null 2>&1 || fail "Required browser opener not found: $opener"
+echo "Opening: $url"
+"$opener" "$url" || fail "Could not open URL with $opener"
